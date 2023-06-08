@@ -78,7 +78,6 @@ exports.item_create_post = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     // Create a category object with escaped and trimmed data.
-    console.log("name:", req.body.name, "description:", req.body.description);
     const item = new Item({
       name: req.body.name,
       description: req.body.description,
@@ -109,6 +108,97 @@ exports.item_create_post = [
         // New genre saved. Redirect to genre detail page.
         res.redirect(item.url);
       }
+    }
+  }),
+];
+
+exports.item_delete_get = asyncHandler(async (req, res, next) => {
+  const item = await Item.findById(req.params.id).populate("category").exec();
+  if (item === null) {
+    res.redirect("/items");
+  }
+  res.render("item_delete", {
+    title: "Delete the",
+    item: item,
+  });
+});
+
+exports.item_delete_post = asyncHandler(async (req, res, next) => {
+  const item = await Item.findById(req.params.id).exec();
+  if (item === null) {
+    res.redirect("/items");
+  } else {
+    await Item.findByIdAndRemove(req.body.id);
+    res.redirect("/items");
+  }
+});
+
+exports.item_update_get = asyncHandler(async (req, res, next) => {
+  const [item, allCategories] = await Promise.all([
+    Item.findById(req.params.id).populate("category").exec(),
+    Category.find().exec(),
+  ]);
+  if (item === null) {
+    const err = new Error("Item not found");
+    err.status = 404;
+    return next(err);
+  }
+  res.render("item_form", {
+    title: "Update item",
+    item: item,
+    categories: allCategories,
+  });
+});
+
+exports.item_update_post = [
+  // Validate and sanitize the name field.
+  body("name", "Item name must contain between 5 and 50 characters")
+    .trim()
+    .isLength({ min: 5, max: 50 })
+    .escape(),
+  body(
+    "description",
+    "Item description must contain between 5 and 200 characters"
+  )
+    .trim()
+    .isLength({ min: 5, max: 200 })
+    .escape(),
+  body("category", "Item category must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "Item price must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("stock", "Item stock must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    // Create a category object with escaped and trimmed data.
+    const item = new Item({
+      name: req.body.name,
+      description: req.body.description,
+      category: req.body.category,
+      price: req.body.price,
+      stock: req.body.stock,
+      _id: req.params.id,
+    });
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values/error messages.
+      res.render("item_form", {
+        title: "Update Item",
+        item: item,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      await Item.findByIdAndUpdate(req.params.id, item);
+      res.redirect(item.url);
     }
   }),
 ];

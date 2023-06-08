@@ -55,7 +55,6 @@ exports.category_create_post = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     // Create a category object with escaped and trimmed data.
-    console.log("name:", req.body.name, "description:", req.body.description);
     const category = new Category({
       name: req.body.name,
       description: req.body.description,
@@ -71,16 +70,16 @@ exports.category_create_post = [
       return;
     } else {
       // Data from form is valid.
-      // Check if Genre with same name already exists.
+      // Check if category with same name already exists.
       const categoryExists = await Category.findOne({
         name: req.body.name,
       }).exec();
       if (categoryExists) {
-        // Genre exists, redirect to its detail page.
+        // Category exists, redirect to its detail page.
         res.redirect(categoryExists.url);
       } else {
         await category.save();
-        // New genre saved. Redirect to genre detail page.
+        // New category saved. Redirect to category detail page.
         res.redirect(category.url);
       }
     }
@@ -120,3 +119,53 @@ exports.category_delete_post = asyncHandler(async (req, res, next) => {
     res.redirect("/categories");
   }
 });
+
+exports.category_update_get = asyncHandler(async (req, res, next) => {
+  const category = await Category.findById(req.params.id).exec();
+  if (category === null) {
+    const err = new Error("Category not found");
+    err.status = 404;
+    return next(err);
+  }
+  res.render("category_form", {
+    title: "Update category",
+    category: category,
+  });
+});
+exports.category_update_post = [
+  // Validate and sanitize the name field.
+  body("name", "Category name must contain between 5 and 50 characters")
+    .trim()
+    .isLength({ min: 3, max: 50 })
+    .escape(),
+  body(
+    "description",
+    "Category description must contain between 5 and 200 characters"
+  )
+    .trim()
+    .isLength({ min: 5, max: 200 })
+    .escape(),
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    // Create a category object with escaped and trimmed data.
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values/error messages.
+      res.render("category_form", {
+        title: "Create Category",
+        category: category,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      await Category.findByIdAndUpdate(req.params.id, category);
+      res.redirect(category.url);
+    }
+  }),
+];

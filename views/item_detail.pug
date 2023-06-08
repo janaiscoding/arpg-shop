@@ -7,4 +7,9 @@ block content
       a(href=item.category.url) #{item.category.name}
     p Price: #{item.price} Divines 
     p In Stock: #{item.stock}
+
+  a(href=item.url+'/update') Update this item
+  <br>
+  a(href=item.url+'/delete') Delete this item
+  <br>
   a(href='/items') Back to all items 
