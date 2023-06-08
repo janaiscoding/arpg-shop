@@ -88,9 +88,11 @@ exports.item_create_post = [
 
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
+      const allCategories = await Category.find().exec();
       res.render("item_form", {
         title: "Create Item",
         item: item,
+        categories: allCategories,
         errors: errors.array(),
       });
       return;
