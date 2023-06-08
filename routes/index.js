@@ -17,6 +17,11 @@ router.get("/item/create", item_controller.item_create_get);
 /* POST Request for creating an item */
 router.post("/item/create", item_controller.item_create_post);
 
+/* ALL DELETE REQUESTS */
+router.get("/category/:id/delete", category_controller.category_delete_get);
+router.post("/category/:id/delete", category_controller.category_delete_post);
+
+
 // ALL READ REQUESTS
 /* GET Request for ALL Categories */
 router.get("/categories", category_controller.category_list);

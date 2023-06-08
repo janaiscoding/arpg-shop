@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1 #{title} #{category.name} category
+  if allItems.length 
+
+    p #[strong Delete the following items before attempting to delete this category.]<br>
+
+        each item in allItems 
+            a(href=item.url) #{item.name}
+    
+  else  
+    p Do you really want to delete this Category?
+
+    form(method='POST' action='')
+      div.form-group
+        input#id.form-control(type='hidden',name='id', required='true', value=category._id )
+
+      button.btn.btn-primary(type='submit') Delete

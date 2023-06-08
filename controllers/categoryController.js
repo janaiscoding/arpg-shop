@@ -86,3 +86,37 @@ exports.category_create_post = [
     }
   }),
 ];
+/*Display the form for deleting a category */
+exports.category_delete_get = asyncHandler(async (req, res, next) => {
+  const [category, allItemsInCategory] = await Promise.all([
+    Category.findById(req.params.id).exec(),
+    Item.find({ category: req.params.id }).exec(),
+  ]);
+  if (category === null) {
+    res.redirect("/categories");
+  }
+  res.render("category_delete", {
+    title: "Delete the",
+    category: category,
+    allItems: allItemsInCategory,
+  });
+});
+
+/*Perform the post request for deleting this category */
+exports.category_delete_post = asyncHandler(async (req, res, next) => {
+  const [category, allItemsInCategory] = await Promise.all([
+    Category.findById(req.params.id).exec(),
+    Item.find({ category: req.params.id }).exec(),
+  ]);
+  if (allItemsInCategory.length > 0) {
+    res.render("category_delete", {
+      title: "Delete the",
+      category: category,
+      allItems: allItemsInCategory,
+    });
+    return;
+  } else {
+    await Category.findByIdAndRemove(req.body.id);
+    res.redirect("/categories");
+  }
+});
