@@ -8,7 +8,7 @@ const asyncHandler = require("express-async-handler");
 exports.category_list = asyncHandler(async (req, res, next) => {
   const allCategories = await Category.find().sort({ name: 1 }).exec();
   res.render("category_list", {
-    title: "Category List",
+    title: "All Categories",
     list_categories: allCategories,
   });
 });
@@ -26,7 +26,7 @@ exports.category_detail = asyncHandler(async (req, res, next) => {
   }
 
   res.render("category_detail", {
-    title: "Category Details",
+    title: "Category Specifics",
     category: category,
     category_items: allItemsInCategory,
   });
@@ -36,8 +36,8 @@ exports.category_detail = asyncHandler(async (req, res, next) => {
 exports.category_create_get = asyncHandler(async (req, res, next) => {
   res.render("category_form", { title: "Create Category" });
 });
-/*Handle category create on post*/
 
+/*Handle category create on post*/
 exports.category_create_post = [
   // Validate and sanitize the name field.
   body("name", "Category name must contain between 5 and 50 characters")

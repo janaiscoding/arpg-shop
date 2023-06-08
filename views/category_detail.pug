@@ -1,14 +1,14 @@
 extends layout
 
 block content
-  h1= title
-  h1 #{category.name} #{category.description}
-
+  h1 #{category.name} 
+  h6 #{category.description}
   ul
   each val in category_items
     li
       a(href=val.url) #{val.name}
-      p #{val.description}
 
   else
     li There are no items in this category.
+  <br>
+  a(href='/categories') Back to all categories

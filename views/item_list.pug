@@ -7,8 +7,9 @@ block content
   each val in list_items
     li
       a(href=val.url) #{val.name} 
-      p #{val.description}
-      p #{val.price} Divines 
-      p #{val.stock} in Stock
   else
     li There are no items.
+  <br>
+  a(href='/') Back to home 
+  <br> 
+  a(href='/item/create') Create a new item  

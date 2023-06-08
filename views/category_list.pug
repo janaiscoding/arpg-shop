@@ -7,7 +7,10 @@ block content
   each val in list_categories
     li
       a(href=val.url) #{val.name}
-      p #{val.description}
 
   else
     li There are no categories.
+  <br>
+  a(href='/') Back to home
+  <br>
+  a(href='/category/create') Create a new category
