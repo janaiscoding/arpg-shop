@@ -40,9 +40,9 @@ exports.category_create_get = asyncHandler(async (req, res, next) => {
 /*Handle category create on post*/
 exports.category_create_post = [
   // Validate and sanitize the name field.
-  body("name", "Category name must contain between 3 and 50 characters")
+  body("name", "Category name must contain between 5 and 50 characters")
     .trim()
-    .isLength({ min: 3, max: 50 })
+    .isLength({ min: 5, max: 50 })
     .escape(),
   body(
     "description",
@@ -136,7 +136,7 @@ exports.category_update_post = [
   // Validate and sanitize the name field.
   body("name", "Category name must contain between 5 and 50 characters")
     .trim()
-    .isLength({ min: 3, max: 50 })
+    .isLength({ min: 5, max: 50 })
     .escape(),
   body(
     "description",

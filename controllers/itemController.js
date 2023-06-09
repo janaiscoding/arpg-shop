@@ -192,9 +192,11 @@ exports.item_update_post = [
     });
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
+      const allCategories = await Category.find().exec();
       res.render("item_form", {
         title: "Update Item",
         item: item,
+        categories: allCategories,
         errors: errors.array(),
       });
       return;
